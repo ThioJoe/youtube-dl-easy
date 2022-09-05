@@ -5,6 +5,7 @@ Allows automatic download options, as well as manually choosing the formats.
 ## REQUIREMENTS: 
 
 - This is NOT  standalone script. It requires the youtube-dl program, which should be put in the same directory as this script. Download YouTube-dl here: https://yt-dl.org/
+- Alternatively, you can use this script with a fork of youtube-dl called "yt-dlp", which has more features and may work better. It is found here: https://github.com/yt-dlp/yt-dlp
 - Some download methods will require ffmpeg to be installed: https://ffmpeg.org/
 
 ## Screenshot Preview
