@@ -19,8 +19,9 @@
 # Set ffmpeg location here. Make sure it is up to date (if using chocolatey:  chocolatey upgrade ffmpeg )
 # Set output location and filename of downloaded files. Defaults to Desktop, with video title and video extension. See documentation on specifics.
 # Set default options / parameters to apply to all downloads. See youtube-dl documentation for details. Includes ffmpeg location and output location using the other variables.
-$output_location=".\%(title)s.%(ext)s"
-$options="--no-mtime --ffmpeg-location C:\ProgramData\chocolatey\bin\ffmpeg.exe --output $output_location"
+$ffmpeg_location="`"C:\ProgramData\chocolatey\bin\ffmpeg.exe`""
+$output_location="`"$HOME\Desktop\%(title)s.%(ext)s`""
+$options="--no-mtime --ffmpeg-location $ffmpeg_location --output $output_location"
 
 #################### Functions ####################
 
