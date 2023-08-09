@@ -19,9 +19,8 @@
 # Set ffmpeg location here. Make sure it is up to date (if using chocolatey:  chocolatey upgrade ffmpeg )
 # Set output location and filename of downloaded files. Defaults to Desktop, with video title and video extension. See documentation on specifics.
 # Set default options / parameters to apply to all downloads. See youtube-dl documentation for details. Includes ffmpeg location and output location using the other variables.
-$ffmpeg_location="`"C:\ProgramData\chocolatey\bin\ffmpeg.exe`""
-$output_location="`"$HOME\Desktop\%(title)s.%(ext)s`""
-$options="--no-mtime --ffmpeg-location $ffmpeg_location --output $output_location"
+$output_location=".\%(title)s.%(ext)s"
+$options="--no-mtime --ffmpeg-location C:\ProgramData\chocolatey\bin\ffmpeg.exe --output $output_location"
 
 #################### Functions ####################
 
@@ -107,6 +106,31 @@ while ($confirm -ne "y") {
 Write-Output ""
 Write-Output "Running Command:   ./youtube-dl.exe $format $URL '--%' $options"
 & ./youtube-dl.exe $format $URL '--%' $options #Final full command used on youtube-dl. I have no idea why '--%' is required in there but without it, it won't work. Got it from an obscure StackOverflow comment
+$convertconfirm = Read-Host -Prompt "Do you want to convert file format? (Y/N)"
+if ($convertconfirm -eq "y") {
+	Write-Output ""
+	Write-Output "---------------------------------------------------------------------------"
+	Write-Output "1. MP4"
+	Write-Output "2. MP3"
+	Write-Output "3. MOV"
+	Write-Output "4. Custom Filetype"
+	$convertchoice = Read-Host "Type your choice number" #Takes in choice from user
+	
+	if ($convertchoice -eq "1") {
+		ffmpeg.exe -i $output_location $output_location + "mp4" 
+	}
+		elseif ($convertchoice -eq "2") {
+			ffmpeg.exe -i $output_location $output_location + "mp3"
+		} elseif ($convertchoice -eq "3") {
+			ffmpeg.exe -i $output_location $output_location + "mov"
+		} elseif ($convertchoice -eq "4") {
+			$customconvert = Read-Host -Prompt "What filetype do you want to convert to?"
+			ffmpeg.exe -i $output_location $output_location + $customconvert
+		}
+
+}
+
+
 cmd /c pause
 
 # SIG # Begin signature block
