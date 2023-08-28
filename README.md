@@ -32,7 +32,7 @@ Alternatively if you like, because this script is signed, instead of "Unrestrict
 
 `Set-ExecutionPolicy -ExecutionPolicy AllSigned -Scope Process`
 
-You can then run the script by opening a PowerShell window to the folder with the script and entering this (don't forget the period):
+You can run the script by opening a PowerShell window to the folder with the script and entering this (after setting the execution policy if necessary, and don't forget the period):
 
 `.\"youtube-dl Easy Script.ps1"`
 
