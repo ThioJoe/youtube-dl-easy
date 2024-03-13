@@ -5,11 +5,10 @@ Allows automatic download options, as well as manually choosing the formats.
 
 ## Features
 
-- Automatic download options for best quality video + audio, best quality single file, or highest quality video and audio formats
-- Manually choose video and audio formats to combine
-- Download only audio or video
-- Download specific audio+video single file
+- Download options for automatic best quality or manually chosen video and audio formats to combine
+- Download option for only audio or video
 - Optional use of command line arguments to override hard-coded variables
+- Support for downloading entire playlists
 - Update the downloader program from within the script
 
 ## REQUIREMENTS
