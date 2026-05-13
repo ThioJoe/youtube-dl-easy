@@ -1,9 +1,9 @@
 <#
 # =====================================
-#        Script Author: ThioJoe
-#        Github.com/ThioJoe
+#   Script Author: ThioJoe
+#   Github.com/ThioJoe
 # =====================================
-#        Version: 1.3
+#   Version: 1.4
 # =====================================
 
 # ----------------------------------- IMPORTANT STUFF -----------------------------------------
@@ -32,10 +32,10 @@ Command Line Arguments:
     Manually set additional parameters for the YouTube downloader executable.
     Example: -options "--no-mtime --add-metadata --extract-audio"
     Default: "--no-mtime --add-metadata"
-	
+    
 -debug
-	Display potentially helpful info for debugging, including resulting variable values
-	
+    Display potentially helpful info for debugging, including resulting variable values
+    
 #>
 
 param (
@@ -93,52 +93,52 @@ function Format-PathVariable($path) {
 
 #Sets $format variable based on user-inputted choice, which is used in final command as format related parameters
 function Set-Format {
-	Switch ($choice)
-	{
-		1 {Write-Output $null} # Automatic default is best video + audio muxed
-		2 {Write-Output "-f best"} # Best quality audio+video single file, no mux
-		3 {Write-Output "-f bestvideo+bestaudio/best --merge-output-format mp4"} # Choose highest quality video and audio formats to combine
-		4 {Write-Output -f $format --merge-output-format mp4} # Choose video and audio formats to combine
-		5 {Write-Output -f $format} # Download only audio or video
-		6 {Write-Output "-f $format"} # Specify single audio+video file
-		# Note for later: Optiosn 5 and 6 likely need to be combined into one option, since they are the same thing
-	}
+    Switch ($choice)
+    {
+        1 {Write-Output $null} # Automatic default is best video + audio muxed
+        2 {Write-Output "-f best"} # Best quality audio+video single file, no mux
+        3 {Write-Output "-f bestvideo+bestaudio/best --merge-output-format mp4"} # Choose highest quality video and audio formats to combine
+        4 {Write-Output -f $format --merge-output-format mp4} # Choose video and audio formats to combine
+        5 {Write-Output -f $format} # Download only audio or video
+        6 {Write-Output "-f $format"} # Specify single audio+video file
+        # Note for later: Optiosn 5 and 6 likely need to be combined into one option, since they are the same thing
+    }
 }
 
 
 # Outputs preview of format for user approval
 function Check-Format {
-	Write-Host "Output will be: " 
-	Write-Host (& .\$downloader_exe $format $URL --get-format)
-	Read-Host "Ok? (Enter Y/N)"
+    Write-Host "Output will be: " 
+    Write-Host (& .\$downloader_exe $format $URL --get-format)
+    Read-Host "Ok? (Enter Y/N)"
 }
 
 # For choices that require manually selecting formats using format codes (Choices 4 & 5)
 function Custom-Formats {
-	# Write-Host "I am inside custom-formats" #For Testing
-	if ($choice -eq 4) {Write-Host "INSTRUCTIONS: Choose the format codes for the video and audio quality you want from the list at the top. ffmpeg must be installed and location specified in batch file."
-		$videoFormat = Read-Host "Video Format Code"
-		$audioFormat = Read-Host "Audio Format Code"
-		$chosenFormat = ${videoFormat}+"+"+${audioFormat}
-		Write-Output $chosenFormat #Returns this variable out of the function
-	}
-	elseif ($choice -eq 5) {Write-Host "INSTRUCTIONS: Choose the format code for the video or audio quality you want from the list at the top."
-		$chosenFormat = Read-Host "Format Code"
-		Write-Output $chosenFormat #Returns this variable out of the function
-		 }
-	
-	elseif ($choice -eq 6) {Write-Host "INSTRUCTIONS: Choose the format code for a specific single audio+video file (one that DOESN'T say 'video only' or 'audio only')."
-		$chosenFormat = Read-Host "Format Code"
-		Write-Output $chosenFormat #Returns this variable out of the function
-		 }
-	}
+    # Write-Host "I am inside custom-formats" #For Testing
+    if ($choice -eq 4) {Write-Host "INSTRUCTIONS: Choose the format codes for the video and audio quality you want from the list at the top. ffmpeg must be installed and location specified in batch file."
+        $videoFormat = Read-Host "Video Format Code"
+        $audioFormat = Read-Host "Audio Format Code"
+        $chosenFormat = ${videoFormat}+"+"+${audioFormat}
+        Write-Output $chosenFormat #Returns this variable out of the function
+    }
+    elseif ($choice -eq 5) {Write-Host "INSTRUCTIONS: Choose the format code for the video or audio quality you want from the list at the top."
+        $chosenFormat = Read-Host "Format Code"
+        Write-Output $chosenFormat #Returns this variable out of the function
+         }
+    
+    elseif ($choice -eq 6) {Write-Host "INSTRUCTIONS: Choose the format code for a specific single audio+video file (one that DOESN'T say 'video only' or 'audio only')."
+        $chosenFormat = Read-Host "Format Code"
+        Write-Output $chosenFormat #Returns this variable out of the function
+         }
+    }
 
 
 # Updates youtube-dl (must be in same directory as script)
 function Update-Program{
-	& .\$downloader_exe --update
-	exit
-	}
+    & .\$downloader_exe --update
+    exit
+    }
 
 # Function to check if the URL is a YouTube playlist
 function Is-PlaylistUrl {
@@ -166,8 +166,8 @@ function Get-PlaylistId {
         return $null
     }
 }
-	
-##########################################################################	
+    
+##########################################################################    
 # Run any utility functions
 # $ffmpeg_location = Format-PathVariable($ffmpeg_location)
 # $output_location = Format-PathVariable($output_location)
@@ -179,61 +179,79 @@ Write-Output ""
 Write-Output 'REQUIRES the youtube-dl program from: https://youtube-dl.org/'
 Write-Output 'Supported Video Sites: https://ytdl-org.github.io/youtube-dl/supportedsites.html'
 Write-Output ""
-$URL = Read-Host "Enter video URL here"
+$userInput = Read-Host "Enter video URL, or the path to a text file of URLs"
+$inputFile = $false
 
-# Check if the URL is a regular playlist
-if (Is-PlaylistUrl $URL) {
-    Write-Output "Regular playlist URL detected. Skipping to format selection...`n"
-    $isPlaylist = "true"
-} elseif (Is-DualUrl $URL) {
-    # Handle the dual URL case
-    $playlistId = Get-PlaylistId $URL
-    Write-Output "`nThe provided URL contains both a video ID and a playlist ID.`n"
-    $choice = Read-Host "Do you want to download only the video or the entire playlist? (Enter 'V' for video or 'P' for playlist)"
-    if ($choice -eq "P") {
+if (Test-Path $userInput -PathType Leaf) {
+    $inputFile = $true
+    $URL = $userInput
+    Write-Output "File input detected. Will process URLs from this file."
+    $isPlaylist = "true" # Treat as a playlist to skip format listing for individual items
+} else {
+    $URL = $userInput
+    # Check if the URL is a regular playlist
+    if (Is-PlaylistUrl $URL) {
+        Write-Output "Regular playlist URL detected. Skipping to format selection...`n"
         $isPlaylist = "true"
-        $URL = "https://www.youtube.com/playlist?list=$playlistId"
-        Write-Output "Will downloading playlist..."
+    } elseif (Is-DualUrl $URL) {
+        # Handle the dual URL case
+        $playlistId = Get-PlaylistId $URL
+        Write-Output "`nThe provided URL contains both a video ID and a playlist ID.`n"
+        $choice = Read-Host "Do you want to download only the video or the entire playlist? (Enter 'V' for video or 'P' for playlist)"
+        if ($choice -eq "P") {
+            $isPlaylist = "true"
+            $URL = "https://www.youtube.com/playlist?list=$playlistId"
+            Write-Output "Will downloading playlist..."
+        } else {
+            $isPlaylist = "false"
+            $URL = Remove-PlaylistFromUrl $URL
+            Write-Output "Will download video..."
+            & .\$downloader_exe --list-formats $URL
+        }
     } else {
         $isPlaylist = "false"
-        $URL = Remove-PlaylistFromUrl $URL
-        Write-Output "Will download video..."
-		& .\$downloader_exe --list-formats $URL
+        Write-Output ""
+        & .\$downloader_exe --list-formats $URL
     }
-} else {
-    $isPlaylist = "false"
-    Write-Output ""
-    & .\$downloader_exe --list-formats $URL
 }
 
-while ($confirm -ne "y") {
-	Write-Output ""
-	Write-Output "---------------------------------------------------------------------------"
-	Write-Output "Options:"
-	Write-Output "1. Download automatically (default is best video + audio muxed)"
-	Write-Output "2. Download the best quality audio+video single file, no mux"
-	Write-Output "3. Download the highest quality audio + video formats, attempt merge to mp4"
-	Write-Output "4. Let me individually choose the video and audio formats to combine"
-	Write-Output "5. Download ONLY audio or video"
-	Write-Output "6. Download a specific audio+video single file, no mux"
-	Write-Output "7. -UPDATE PROGRAM- (Admin May Be Required)"
-	Write-Output ""
 
-	$choice = Read-Host "Type your choice number"
-	if (($choice -eq 4) -or ($choice -eq 5) -or ($choice -eq 6)) { $format = Custom-Formats }
-	if ($choice -eq 7) {Update-Program}
-	# if ($choice -eq 6) {$id = Read-Host "Enter format ID"}
-	$format = Set-Format
-	if ($isPlaylist -eq "false"){
-		$confirm = Check-Format
-	}	else {
-		Write-Host "Skipping format list for playlist..."
-		$confirm = Read-Host "Proceed and download playlist videos? (Enter Y/N)"
-	}
+while ($confirm -ne "y") {
+    Write-Output ""
+    Write-Output "---------------------------------------------------------------------------"
+    Write-Output "Options:"
+    Write-Output "1. Download automatically (default is best video + audio muxed)"
+    Write-Output "2. Download the best quality audio+video single file, no mux"
+    Write-Output "3. Download the highest quality audio + video formats, attempt merge to mp4"
+    Write-Output "4. Let me individually choose the video and audio formats to combine"
+    Write-Output "5. Download ONLY audio or video"
+    Write-Output "6. Download a specific audio+video single file, no mux"
+    Write-Output "7. -UPDATE PROGRAM- (Admin May Be Required)"
+    Write-Output ""
+
+    $choice = Read-Host "Type your choice number"
+    if (($choice -eq 4) -or ($choice -eq 5) -or ($choice -eq 6)) { $format = Custom-Formats }
+    if ($choice -eq 7) {Update-Program}
+    # if ($choice -eq 6) {$id = Read-Host "Enter format ID"}
+    $format = Set-Format
+    if ($isPlaylist -eq "false"){
+        $confirm = Check-Format
+    }    else {
+        Write-Host "Skipping format list for playlist..."
+        $confirm = Read-Host "Proceed and download playlist videos? (Enter Y/N)"
+    }
 }
 
 # Final Run
 Write-Output ""
-Write-Output "Running Command:   .\$downloader_exe $format $URL '--%' $options"
-& .\$downloader_exe $format $URL '--%' $options #Final full command used on youtube-dl. The '--%' basically tells powershell not to interpret the rest of the line as powershell commands, so it can be passed to youtube-dl as is.
-cmd /c pause
+if ($inputFile) {
+    Write-Output "Running Command:   .\$downloader_exe $format -a `"$URL`" '--%' $options"
+    & .\$downloader_exe $format -a "`"$URL`"" '--%' $options #Final full command used on youtube-dl. The '--%' basically tells powershell not to interpret the rest of the line as powershell commands, so it can be passed to youtube-dl as is.
+}
+else {
+    Write-Output "Running Command:   .\$downloader_exe $format $URL '--%' $options"
+    & .\$downloader_exe $format $URL '--%' $options #Final full command used on youtube-dl. The '--%' basically tells powershell not to interpret the rest of the line as powershell commands, so it can be passed to youtube-dl as is.
+}
+
+Read-Host "Press Enter to Continue:" 
+
