@@ -50,7 +50,7 @@ param (
 # Set output location and filename of downloaded files. Defaults to Desktop, with video title and video extension. See documentation on specifics.
 # Set default options / parameters to apply to all downloads. See youtube-dl documentation for details. Includes ffmpeg location and output location using the other variables.
 $ffmpeg_location="`"ffmpeg.exe`"" # Just put it in the same directory as the script
-$output_location="`"Outputs\%(title)s.%(ext)s`"" # Outputs to a folder called "Outputs" in the same directory as the script, with filename as video title
+$output_location="`Outputs\%(title)s.%(ext)s"` # Outputs to a folder called "Outputs" in the same directory as the script, with filename as video title
 $downloader_exe="yt-dlp.exe" # "yt-dlp.exe"  or  "youtube-dl.exe"
 $other_options = "--no-mtime --add-metadata"  # The variables for ffmpeg location and output location are added automatically later
 
@@ -59,7 +59,7 @@ if ($exe) {
 }
 
 if ($desktop) {
-    $output_location = "`"$HOME\Desktop\Outputs\%(title)s.%(ext)s`""
+    $output_location = "` $HOME\Desktop\Outputs\%(title)s.%(ext)s"`
 }
 
 if ($options) {
